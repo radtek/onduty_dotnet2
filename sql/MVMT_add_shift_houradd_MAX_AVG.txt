@@ -1,0 +1,75 @@
+select tb3.*,tb4.seq from (
+
+select tb1.shift_day,tb1.step,tb1.shift_hour,max(tb1.Max_MVMT) as Max_MVMT,sum(Avg_move) as Avg_move  from (
+
+select substr(t71.shift_day,0,6)as shift_day,t71.step,t71.shift_hour,max(t71.move_qty)as Max_MVMT,round(avg(t71.move_qty))as Avg_move from (
+
+select t70.shift_day,t70.step,t70.shift_hour,sum(t70.move_qty)move_qty from (
+
+select t.shift_day, t.step,case when t.shift_hour>=7 and t.shift_hour<19 then 'D' else 'N' end shift_hour  ,sum(t.move_qty) move_qty
+  from eis_daily_hour_wipmove_sum t
+ where substr(t.shift_day, 0, 6) = substr('20100525', 0, 6)
+   and t.step in ('BM_Line',
+                  'R_Line',
+                  'B_Line',
+                  'G_Line',
+                  'IF_Line',
+                  'ITO_Line',
+                  'ITO2_Line',
+                  'PS_Line',
+                  'IS_Line',
+                  'Shipping',
+                  'BM_OCLine',
+                  'R_OCLine',
+                  'B_OCLine',
+                  'G_OCLine',
+                  'PS_OCLine',
+                  'I3_IF',
+                  'I3_IS')
+ group by shift_day, step,shift_hour
+)t70
+
+group by shift_day,step,shift_hour
+
+)t71
+
+group by  substr(shift_day,0,6),step,shift_hour
+
+
+
+union all
+
+select substr('20100525',0,6)as shift_day,tt.stage, tt1.shift_hour, 0 as Max_MVMT,0 as Avg_move
+  from rpt_mvmt_stage tt,
+       (select 'D' as shift_hour
+          from dual
+        union all
+        select 'N' as shift_hour from dual) tt1,shift_date tt2
+        where substr(tt2.shift_date,0,8)=substr('20100525',0,8)
+        
+
+) tb1
+
+
+group by shift_day,step,shift_hour
+
+)tb3,rpt_mvmt_stage tb4
+where tb3.step=tb4.stage
+
+order by tb4.seq
+
+
+        
+        
+        
+        
+        
+       
+      
+        
+        
+        
+        
+    
+
+

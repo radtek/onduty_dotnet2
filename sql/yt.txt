@@ -1,0 +1,66 @@
+MTD C/T 
+
+select nvl(sum(decode(a.lot_type,'P',a.total_cycletime))/sum(decode(a.lot_type,'P',a.ship_qty)),0) P_cycle 
+from lot_ship_cycletime a 
+where a.shift_date BETWEEN substr('20100525',1,6) and '20100525'
+  and a.lot_type in ('P','E') 
+  and a.prod_name IN 
+    (
+      select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+      WHERE SHOP='T1CF_DAILY' 
+      and TRIM(ENABLE_FLAG)='Y' and section = 'BM_PRODUCT'
+    )  
+ 
+
+T/R %  = TOTAL_MOVE / TOTAL_IN_LINE WIP
+
+
+
+select nvl(SUM(PMOVE_SUBS_QTY +EMOVE_SUBS_QTY ),0) Move 
+from DAILY_Stage_wipmove_sum
+where shop_key='CF.T1.Fab1'
+  and substr(prod_id,1,instr(prod_id,'.')-1) in 
+        ( select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+          WHERE SHOP='T1CF_DAILY' 
+            and TRIM(ENABLE_FLAG)='Y' and section = 'BM_PRODUCT'
+          union all
+          select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+          WHERE SHOP='T1CF_DAILY' 
+            and TRIM(ENABLE_FLAG)='Y' and section = 'OC_BM_PRODUCT' 
+        )    
+  and stage_key in ('BM_Line.T1CF.Fab1','R_Line.T1CF.Fab1','B_Line.T1CF.Fab1','G_Line.T1CF.Fab1','IF_Line.T1CF.Fab1','PS_OCLine.T1CF.Fab1','ITO_Line.T1CF.Fab1','PS_Line.T1CF.Fab1','IS_Line.T1CF.Fab1','Shipping.T1CF.Fab1','BM_OCLine.T1CF.Fab1','B_OCLine.T1CF.Fab1','R_OCLine.T1CF.Fab1','G_OCLine.T1CF.Fab1','I3_IF.T1CF.Fab1','I3_IS.T1CF.Fab1') 
+  and substr(shift_day_key,1,8)='20100525'
+
+
+
+select SHIFT_DATE,stage,nvl(sum(dt_starttm_pwip_subs_qty)+sum(dt_starttm_ewip_subs_qty),0)  TodayWip
+from 
+  (
+    select T1.*,T2.SHIFT_DATE 
+    from daily_stage_wipmove_sum T1,SHIFT_DATE T2,SHOP T3 
+    where T3.SHOP_KEY='CF.T1.Fab1' 
+ 	    and T3.FAB_ID=T2.FAB_ID 
+ 	    and substr(T2.SHIFT_DATE,1,8)='20100526'
+      and substr(T1.prod_id,1,instr(T1.prod_id,'.')-1) in 
+        ( select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+          WHERE SHOP='T1CF_DAILY' 
+            and TRIM(ENABLE_FLAG)='Y' and section = 'BM_PRODUCT'
+          union all
+          select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+          WHERE SHOP='T1CF_DAILY' 
+            and TRIM(ENABLE_FLAG)='Y' and section = 'OC_BM_PRODUCT' 
+        )    
+      and T2.SHIFT_DAY_KEY=T1.SHIFT_DAY_KEY
+  )T1,STAGE T2 
+where T2.SHOP='T1CF' and T2.STAGE_KEY=T1.STAGE_KEY(+) 
+  and T2.stage in ('BM_Line','R_Line','B_Line','G_Line','IF_Line','PS_OCLine','ITO_Line','PS_Line','IS_Line','Shipping','BM_OCLine','B_OCLine','R_OCLine','G_OCLine','ITO2_Line','I3_IF','I3_IS') 
+group by SHIFT_DATE,T2.MAINSTEP_SEQ,T2.STAGE 
+order by decode(t2.stage,'BM_Line',1,'R_Line',2,'B_Line',3,'G_Line',4,'IF_Line',5,'I3_IF',6,'ITO_Line',7,'ITO2_Line',8,'PS_Line',9,'IS_Line',10,'I3_IS',11,'Shipping',12,'BM_OCLine',13,'R_OCLine',14,'B_OCLine',15,'G_OCLine',16,'PS_OCLine',17) 
+
+
+
+
+
+
+
+

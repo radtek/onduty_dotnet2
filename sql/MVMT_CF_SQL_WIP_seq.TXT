@@ -1,0 +1,47 @@
+select tv4.shift_date,tv4.stage,sum(tv4.move_qty) as move_qty,tv4.seq from (
+
+select case
+         when SHIFT_DATE is null then
+          '20100526'
+         else
+          t1.SHIFT_DATE
+       end SHIFT_DATE,
+       t2.stage,
+       nvl(sum(dt_starttm_pwip_subs_qty) + sum(dt_starttm_ewip_subs_qty), 0) move_qty
+       ,t3.seq
+  from (select T1.*, T2.SHIFT_DATE
+          from daily_stage_wipmove_sum T1, SHIFT_DATE T2, SHOP T3
+         where T3.SHOP_KEY = 'CF.T1.Fab1'
+           and T3.FAB_ID = T2.FAB_ID
+           and substr(T2.SHIFT_DATE, 1, 6) = substr('20100526',1,6)
+           and substr(T1.prod_id, 1, instr(T1.prod_id, '.') - 1) in
+               (select PROD_NAME
+                  from e_fab_cf_prod_setting@ODS2STDMAN
+                 WHERE SHOP = 'T1CF_DAILY'
+                   and TRIM(ENABLE_FLAG) = 'Y'
+                   and section = 'BM_PRODUCT'
+                union all
+                select PROD_NAME
+                  from e_fab_cf_prod_setting@ODS2STDMAN
+                 WHERE SHOP = 'T1CF_DAILY'
+                   and TRIM(ENABLE_FLAG) = 'Y'
+                   and section = 'OC_BM_PRODUCT')
+           and T2.SHIFT_DAY_KEY = T1.SHIFT_DAY_KEY) T1,
+       STAGE T2,rpt_mvmt_stage t3
+ where T2.SHOP = 'T1CF'
+   and T2.STAGE_KEY = T1.STAGE_KEY(+)
+   and T2.stage(+)=t3.stage
+      
+ group by SHIFT_DATE, T2.MAINSTEP_SEQ, T2.STAGE,t3.seq
+ 
+ 
+ 
+ union all
+ 
+ select tv2.shift_date,tv1.stage,0 as move_qty,tv1.seq from rpt_mvmt_stage tv1,shift_date tv2
+ where substr(tv2.shift_date,0,6)=substr('20100526',0,6)
+
+)tv4
+group by shift_date,stage,seq
+order by seq
+

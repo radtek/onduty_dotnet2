@@ -1,0 +1,19 @@
+get month day -1
+
+    
+select to_char(to_date(t1.shift_date,'YYYYMMDD')-1,'YYYYMMDD') as shift_date from shift_date  t1
+where substr(t1.shift_date,0,6)=substr('20100601',0,6)
+order by shift_date
+    
+run  cycletime
+
+select round(nvl(sum(decode(a.lot_type,'P',a.total_cycletime))/sum(decode(a.lot_type,'P',a.ship_qty)),0),2) P_cycle 
+from lot_ship_cycletime a 
+where a.shift_date BETWEEN substr('20100602',1,6) and '20100602'
+  and a.lot_type in ('P','E') 
+  and a.prod_name IN 
+    (
+      select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+      WHERE SHOP='T1CF_DAILY' 
+      and TRIM(ENABLE_FLAG)='Y' and section = 'BM_PRODUCT'
+    )  

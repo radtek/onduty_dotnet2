@@ -1,0 +1,52 @@
+select shift_date,sum(tb3.in_line_wip)as in_line_wip from (
+
+select ot1.shift_date,ot1.total_wip1-ot2.total_wip2 as IN_LINE_WIP
+from 
+(
+select substr(shift_day_key,1,8) as shift_date,nvl(sum(dt_starttm_pwip_subs_qty)+sum(dt_starttm_ewip_subs_qty),0) total_wip1 
+from DAILY_Stage_wipmove_sum
+where shop_key='CF.T1.Fab1'
+  and substr(prod_id,1,instr(prod_id,'.T1CF.Fab1')-1) IN 
+    (
+      select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+      WHERE SHOP='T1CF_DAILY' 
+        and TRIM(ENABLE_FLAG)='Y' and section = 'BM_PRODUCT'
+      union all
+      select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+      WHERE SHOP='T1CF_DAILY' 
+        and TRIM(ENABLE_FLAG)='Y' and section = 'OC_BM_PRODUCT'
+    ) 
+  and stage_key <> 'CFGB.T1CF.Fab1' 
+  and substr(shift_day_key,1,6)=substr('20100607',1,6)
+group by substr(shift_day_key,1,8)
+) ot1,
+(  
+select substr(shift_day_key,1,8) as shift_date,nvl(sum(dt_starttm_pwip_subs_qty)+sum(dt_starttm_ewip_subs_qty),0) total_wip2 
+from DAILY_Stage_wipmove_sum
+where shop_key='CF.T1.Fab1'
+  and substr(prod_id,1,instr(prod_id,'.T1CF.Fab1')-1) IN 
+    (
+      select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+      WHERE SHOP='T1CF_DAILY' 
+        and TRIM(ENABLE_FLAG)='Y' and section = 'BM_PRODUCT'
+      union all
+      select PROD_NAME from e_fab_cf_prod_setting@ODS2STDMAN 
+      WHERE SHOP='T1CF_DAILY' 
+        and TRIM(ENABLE_FLAG)='Y' and section = 'OC_BM_PRODUCT'
+    )
+  and (substr(stage_key,1,instr(stage_key,'.')-1) in ('R31','R32','R33') 
+   or instr(prod_id, 'REWORK') > 0) 
+  and stage_key not in  ('CFGB.T1CF.Fab1','CFGB2.T1CF.Fab1','NA') 
+  and substr(shift_day_key,1,6) = substr('20100607' ,1,6)
+group by substr(shift_day_key,1,8) 
+) ot2
+where ot1.shift_date=ot2.shift_date
+
+union all
+select tb1.shift_date,0 as IN_LINE_WIP from shift_date tb1
+where substr(tb1.shift_date,0,6)=substr('20100607',0,6)
+
+
+) tb3
+
+group by shift_date

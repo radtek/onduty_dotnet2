@@ -1,0 +1,64 @@
+﻿<%@ Master Language="C#"  AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<script runat="server">
+
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+
+<head runat="server">
+    <title>Onduty_Dotnet</title>
+   
+     
+</head>
+
+
+<body>
+    <form id="form1" runat="server">
+  
+    <div>
+          <asp:ScriptManager id="ScriptManager1" runat="server">
+                                    </asp:ScriptManager>
+         <table hight=100% width=100%><tr><td align='center' valign='middle' style="height: 416px"> 
+  <table style="width: 1024px; height: 269px">
+            <tr>
+                <td colspan="3" style="border-left-color: darkgray; border-bottom-color: darkgray;
+                    border-top-style: solid; border-top-color: darkgray; border-right-style: solid;
+                    border-left-style: solid; border-right-color: darkgray; border-bottom-style: solid">
+                    <asp:Image ID="Image1" runat="server" Height="106px" ImageUrl="~/images/new_cim_onduty_system.jpg" /></td>
+            </tr>
+            <tr>
+                <td rowspan="2" style=" border-left-color: darkgray; border-bottom-color: darkgray;
+                    width: 1px; border-top-style: solid; border-top-color: darkgray; border-right-style: solid;
+                    border-left-style: solid; border-right-color: darkgray; border-bottom-style: solid; vertical-align: top;">
+                    <asp:PlaceHolder ID="PlaceHolder1" runat="server"> <asp:TreeView ID="TreeView1" runat="server">
+                    </asp:TreeView></asp:PlaceHolder>
+                   
+                </td>
+                <td colspan="2" rowspan="2" style="border-left-color: darkgray; border-bottom-color: darkgray;
+                    border-top-style: solid; border-top-color: darkgray; border-right-style: solid;
+                    border-left-style: solid; border-right-color: darkgray; border-bottom-style: solid">
+                   
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>
+                </td>
+            </tr>
+            <tr>
+            
+            </tr>
+      <tr>
+            <td colspan="3" rowspan="1" style="border-left-color: darkgray; border-bottom-color: darkgray;
+              vertical-align: top; border-top-style: solid; border-top-color: darkgray; border-right-style: solid;
+              border-left-style: solid; background-color: darkgray; border-right-color: darkgray;
+              border-bottom-style: solid; height: 22px;">
+                Copyright  @2010-2011~ Innolux Corp., Design By CIM 謝正一 (513-64179)</td>
+      </tr>
+        </table>
+</td></tr></table>
+                           
+      
+    </div>
+    </form>
+</body>
+</html>

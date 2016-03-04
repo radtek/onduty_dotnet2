@@ -1,0 +1,42 @@
+select t4.stepid,t4.equipmentid,t4.glassid,
+ --rework_qty_1,rework_qty_7,
+ case when t4.rework_qty_1=t4.rework_qty_7 then t4.rework_qty_1-1
+ when t4.rework_qty_1<=t4.rework_qty_7 then t4.rework_qty_1 end rework_qty  ,
+ 0 movememt
+  from (
+ 
+ select t3.stepid,t3.equipmentid,t3.glassid,sum(t3.rework_qty_1)rework_qty_1,sum(t3.rework_qty_7)rework_qty_7 from (
+ 
+ select t.stepid, t.equipmentid, t.glassid,0 rework_qty_1 ,count(t.glassid) rework_qty_7
+   from oee_ary_gls_hst t
+  where t.ENDDATETIME >= to_char(sysdate - 7, 'YYYY-MM-DD') || ' 07:00:00'
+       and t.ENDDATETIME < to_char(sysdate, 'YYYY-MM-DD') || ' 07:00:00'
+    and t.glassid in
+        (
+         
+         select distinct (t.glassid)
+           from oee_ary_gls_hst t
+          where ENDDATETIME >=
+                to_char(sysdate - 1, 'YYYY-MM-DD') || ' 07:00:00'
+            and ENDDATETIME < to_char(sysdate, 'YYYY-MM-DD') || ' 07:00:00')
+ 
+  group by equipmentid, stepid, glassid
+  
+  union all
+  
+   select t2.stepid, t2.equipmentid, t2.glassid,count(t2.glassid) rework_qty_1, 0 rework_qty_7
+   from oee_ary_gls_hst t2
+  where t2.ENDDATETIME >= to_char(sysdate - 1, 'YYYY-MM-DD') || ' 07:00:00'
+  and t2.ENDDATETIME < to_char(sysdate, 'YYYY-MM-DD') || ' 07:00:00'
+   
+   group by equipmentid, stepid, glassid
+ 
+ 
+ )t3
+group by t3.stepid,t3.equipmentid,t3.glassid
+ 
+ )t4
+ 
+ where t4.rework_qty_1>=1  and t4.rework_qty_7 >=2
+ 
+ 

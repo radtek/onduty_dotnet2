@@ -1,0 +1,44 @@
+select t4.*,t5.seq from (select t3.shift_day,t3.shift_hour,t3.step,sum(t3.move_qty)move_qty from (
+
+select t.shift_day,case when t.shift_hour>=7 and t.shift_hour<19  then 'D' else 'N' end shift_hour,t.step
+,sum(t.move_qty)move_qty from eis_daily_hour_wipmove_sum t
+where substr(t.shift_day,0,6)=substr('20100501',0,6)
+and t.step in(
+
+'BM_Line',
+'R_Line',
+'B_Line',
+'G_Line',
+'IF_Line',
+'ITO_Line',
+'ITO2_Line',
+'PS_Line',
+'IS_Line',
+'Shipping',
+'BM_OCLine',
+'R_OCLine',
+'B_OCLine',
+'G_OCLine',
+'PS_OCLine',
+'I3_IF',
+'I3_IS'
+
+
+)
+
+group by shift_day,step,shift_hour
+
+union all
+
+select t21.shift_date,t22.shift_hour,t20.stage,t20.qty from rpt_mvmt_stage t20,shift_date t21,
+(
+select 'D' as shift_hour   from dual 
+union
+select 'N' from dual 
+)t22
+where substr(t21.shift_date,0,6)=substr('20100501',0,6)
+
+)t3
+group by shift_day,shift_hour,step
+)t4,rpt_mvmt_stage t5
+where t4.step=t5.stage

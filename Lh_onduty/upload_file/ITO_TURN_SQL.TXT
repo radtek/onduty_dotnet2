@@ -1,0 +1,16 @@
+// search  component for ITO TURN
+select * from cft.fwcomponent ta
+where ta.sysid in (select t3.fromid from cft.fwcomponent_pn2m t3 
+where t3.valdata in (
+select b3.valdata from cft.fwcomponent b,cft.fwcomponent_pn2m b3
+where b.componentid='BCZA1FA505L012'
+and b.sysid=b3.fromid
+and b3.keydata='ORISRCGLASSID') and t3.fromid is not null
+and ta.componentid not in (
+
+select b3.valdata from cft.fwcomponent b,cft.fwcomponent_pn2m b3
+where b.componentid='BCZA1FA505L012'
+and b.sysid=b3.fromid
+and b3.keydata='SRCGLASSID'
+)
+)

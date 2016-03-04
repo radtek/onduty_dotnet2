@@ -1,0 +1,13 @@
+select 'DAILY_MOVE' from dual
+union all
+select * from (
+select t.shift_date from shift_date t
+where substr(t.shift_date,0,6)=substr('20100512',0,6)
+order by shift_date 
+)t2
+union all
+select 'MAX_MVMT' from dual
+
+union all
+
+select 'AVG_MOVE' from dual
