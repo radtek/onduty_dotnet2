@@ -109,8 +109,7 @@ function showHideAnswer(obj,imgObj)
 </script>
 <head id="Head1" >
     <title>值班記錄-</title>
-    <link href="app_themes/layout/layout.css" rel="stylesheet" type="text/css" />
-   
+   <link href="app_themes/layout/layout.css" rel="stylesheet" type="text/css" />
 </head>
 
        
@@ -410,6 +409,12 @@ function showHideAnswer(obj,imgObj)
                                 <td align="left" colspan="3" style="height: 24px" valign="top">
                                     <asp:TextBox ID="TextBox_ADDITION_INFO" runat="server" Height="70px" TextMode="MultiLine"
                                         Width="450px"></asp:TextBox>&nbsp;&nbsp;&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td align="center" class="pageTD" style="width: 10%; height: 24px">
+                                    檔案上傳</td>
+                                <td align="left" colspan="3" style="height: 24px" valign="top">
+                                    <asp:FileUpload ID="FileUpload1" runat="server" />(檔案大小15MB)</td>
                             </tr>
                             <tr>
                                 <td class="pageTD" colspan="8" style="height: 35px">

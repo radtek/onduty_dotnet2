@@ -48,7 +48,19 @@
                                 <td align="center" class="pageTD" style="width: 12%; height: 24px">
                                     表單編號</td>
                                 <td align="left" colspan="3" style="height: 24px" >
-                                    <asp:Label ID="Label_SEQ" runat="server" Text="Label"></asp:Label>&nbsp;&nbsp;&nbsp;</td>
+                                    <asp:Label ID="Label_SEQ" runat="server" Text="Label"></asp:Label>&nbsp;&nbsp;
+                                 
+                                </td>
+                            </tr>
+                            <tr style="font-family: Times New Roman">
+                                <td align="center" class="pageTD" style="width: 12%; height: 24px">
+                                    檔案上傳</td>
+                                <td align="left" colspan="3" style="height: 20px" valign="top">
+                                    <asp:FileUpload ID="FileUpload1" runat="server" />(檔案大小15MB)<br>
+                                    <asp:Table ID="Table1" runat="server">
+                                    </asp:Table>
+                                 
+                                </td>
                             </tr>
                             <tr>
                                 <td align="center" class="pageTD" style="width: 12%; height: 24px">
