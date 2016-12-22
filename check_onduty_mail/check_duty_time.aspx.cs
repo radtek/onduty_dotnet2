@@ -54,6 +54,8 @@ update onduty_email_list t
         ds_temp1 = bind_data1();
         ds_temp2 = bind_data2(ds_temp1.Tables[0]);
 
+        Cfunction CVerify = new Cfunction("OndutyDutyTime");
+        CVerify.GetIfHadDone(CVerify.name);
         if (ds_temp1.Tables[0].Rows.Count == ds_temp2.Tables[0].Rows.Count)
         {
 
@@ -63,11 +65,28 @@ update onduty_email_list t
             for (int i = 0; i <= ds_temp1.Tables[0].Rows.Count - 1; i++)
             {
 
-                call_mail(ds_temp1.Tables[0].Rows[i]["name"].ToString(), ds_temp1.Tables[0].Rows[i]["class"].ToString(), ds_temp1.Tables[0].Rows[i]["email"].ToString());
+                if (CVerify.Verify.Equals("N"))
+                {
+                    call_mail(ds_temp1.Tables[0].Rows[i]["name"].ToString(), ds_temp1.Tables[0].Rows[i]["class"].ToString(), ds_temp1.Tables[0].Rows[i]["email"].ToString());
+                    string sqlInsert = @"insert into dw_etl_runlog
+                          (procedurename, lastruntm, errcode, errmsg, lastrunshiftdate, lastrunsysdate, errlevel, duration)
+                          values
+                         ('OndutyDutyTime', '', 'Begin', 'OK', '', sysdate, '', '')";
+                    func.get_sql_execute(sqlInsert, conn);
+                
+                }
+
+            
+            
             }
           
         }
-        
+
+
+       
+
+
+     
       
         
         func.write_log("Check_Onduty_Time From Onduty_dotnet2 ", "D:\\CIM-SE-RPT-WEB\\E-FAB_dotnet\\LOG\\", "log");
@@ -243,6 +262,51 @@ update onduty_email_list t
         smtp.Send(email);
 
 
-    } 
+    }
+
+
+    public class Cfunction
+    {
+        // Field
+        public string name;
+        public string Verify;
+
+        // Constructor that takes no arguments.
+        public Cfunction()
+        {
+            name = "unknown";
+        }
+
+        // Constructor that takes one argument.
+        public Cfunction(string nm)
+        {
+            name = nm;
+        }
+
+        // Method
+        public void GetIfHadDone(string newName)
+        {
+            string conn = System.Configuration.ConfigurationSettings.AppSettings["DBCONN_OARPT_PARS1"];
+
+            string sqlCheck = @"select count(t.procedurename) counter from dw_etl_runlog t
+                       where t.procedurename='{0}' and t.lastrunsysdate>sysdate-1/2
+                     ";
+            sqlCheck = string.Format(sqlCheck, name);
+            DataSet dsCheck = new DataSet();
+            dsCheck = func.get_dataSet_access(sqlCheck, conn);
+            Int32 counter = Convert.ToInt32(dsCheck.Tables[0].Rows[0]["counter"].ToString());
+            if (counter>0)
+            {
+                Verify = "Y";
+            }
+            else
+            {
+                Verify = "N";
+            }
+
+        }
+    }
+    
+
 
 }

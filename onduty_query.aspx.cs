@@ -58,7 +58,7 @@ public partial class onduty_query : System.Web.UI.Page
             DropDownList8.DataSource = arlist_temp1;
             DropDownList8.DataBind();
             DropDownList8.Text = DateTime.Now.ToString("mm");
-            DropDownList8.Text = "30";
+            DropDownList8.Text = "00";
 
 
 

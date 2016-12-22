@@ -254,7 +254,7 @@ public partial class board_add : System.Web.UI.Page
 
         WebClient w = new WebClient();
         w.Encoding = Encoding.GetEncoding("Big5");
-        string strHTML = w.DownloadString("http://t1cimweb01/onduty_dotnet/board_record.aspx");
+        string strHTML = w.DownloadString("http://t1cimweb01/onduty_dotnet2/board_record.aspx");
         ArrayList maillist = new ArrayList();
 
         //string sql = " select count(*) as count_num from ( " +

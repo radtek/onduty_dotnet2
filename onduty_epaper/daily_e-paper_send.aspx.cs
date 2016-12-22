@@ -22,19 +22,19 @@ using System.Text.RegularExpressions;
 
 public partial class onduty_epaper_daily_e_paper_send : System.Web.UI.Page
 {
-     string conn = System.Configuration.ConfigurationSettings.AppSettings["DBCONN_OARPT_PARS1"];
+    string conn = System.Configuration.ConfigurationSettings.AppSettings["DBCONN_OARPT_PARS1"];
     DataSet ds_temp = new DataSet();
     DataSet ds_temp1 = new DataSet();
     string sql_str = "";
-
+    string sql_check = "";
     string sql_count = "";
+    string sqlInsert= "";
     ArrayList arlist_temp1 = new ArrayList();
     ArrayList arlist_temp2 = new ArrayList();
 
     protected void Page_Load(object sender, EventArgs e)
-   
     {
-       
+
 
         WebClient w = new WebClient();
         w.Encoding = Encoding.GetEncoding("Big5");
@@ -78,25 +78,25 @@ public partial class onduty_epaper_daily_e_paper_send : System.Web.UI.Page
 "           from onduty t1                                  " +
  " where 1=1                                                           ";
 
-      
-       
-            sql += " and  t1.calltime>=to_date('" +DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd") + " 08:30"+"','YYYY/MM/DD HH24:MI')     ";
-
-      
-
-       sql += " and  t1.calltime<to_date('" + DateTime.Now.AddDays(+0).ToString("yyyy/MM/dd") + " 08:30" + "','YYYY/MM/DD HH24:MI')     ";
 
 
-     
+        sql += " and  t1.calltime>=to_date('" + DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd") + " 08:30" + "','YYYY/MM/DD HH24:MI')     ";
+
+
+
+        sql += " and  t1.calltime<to_date('" + DateTime.Now.AddDays(+0).ToString("yyyy/MM/dd") + " 08:30" + "','YYYY/MM/DD HH24:MI')     ";
+
+
+
 
 
 
         sql += " order by calltime desc ";
 
-        string sql_count="";
+        string sql_count = "";
 
         sql_count = sql;
-       
+
         sql_count = " select count(aa.seq)as total_count,sum(case when aa.ars_flag='ON' then 1 else 0 end) as ars_count,  " +
 "        sum(case when aa.close_flag='OPEN' then 1 else 0 end) as open_count,                         " +
 "        sum(case when aa.alarm_flag='ON' then 1 else 0 end) as alarm_count,                           " +
@@ -105,9 +105,9 @@ public partial class onduty_epaper_daily_e_paper_send : System.Web.UI.Page
 
 
 
-                                                                                                           
 
-      
+
+
 
         DataSet ds_fl = new DataSet();
         ds_fl = func.get_dataSet_access(sql_count, conn);
@@ -120,7 +120,26 @@ public partial class onduty_epaper_daily_e_paper_send : System.Web.UI.Page
         mail_List = func.ArrayListToString(Server.MapPath("..") + "\\maillist\\onduty12.txt");
         //mail_List = "oscar.hsieh@innolux.com";
 
-        SendEmail("cim.alarm@innolux.com", mail_List, title, strHTML, "");//
+        sql_check = @"select count(t.procedurename) counter from dw_etl_runlog t
+                       where t.procedurename='Onduty_Daily_email' and t.lastrunsysdate>sysdate-1/2
+                     ";
+        DataSet dsCheck = new DataSet();
+        dsCheck = func.get_dataSet_access(sql_check, conn);
+
+        // Check if had Send Mail 
+        if (Convert.ToInt32(dsCheck.Tables[0].Rows[0]["counter"].ToString()) == 0)
+        {
+            SendEmail("cim.alarm@innolux.com", mail_List, title, strHTML, "");//
+
+            sqlInsert = @"insert into dw_etl_runlog
+                          (procedurename, lastruntm, errcode, errmsg, lastrunshiftdate, lastrunsysdate, errlevel, duration)
+                          values
+                         ('Onduty_Daily_email', '', 'Begin', 'OK', '', sysdate, '', '')";
+            func.get_sql_execute(sqlInsert, conn);
+        }
+
+
+       
 
         Response.Write("<script language=\"javascript\">setTimeout(\"window.opener=null; window.close();\",null)</script>");
 
@@ -148,6 +167,6 @@ public partial class onduty_epaper_daily_e_paper_send : System.Web.UI.Page
         smtp.Send(email);
 
 
-    } 
+    }
 
 }

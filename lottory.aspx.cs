@@ -41,7 +41,7 @@ public partial class lottory : System.Web.UI.Page
             Random r = new Random();
             for (int j = 0; j <= choose_num-1; j++)
             {
-                int temp = r.Next(1, choose_area); //隨機抓取一組數字放入x[]陣列中   
+                int temp = r.Next(0, choose_area); //隨機抓取一組數字放入x[]陣列中   
                 if (loto[temp] == 0) { j--; }//如果數字為0，則重新產生亂數   
                 else
                 {

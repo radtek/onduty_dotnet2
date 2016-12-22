@@ -72,11 +72,11 @@ public partial class onduty_epaper_daily_e_paper : System.Web.UI.Page
 
       
        
-            sql += " and  t1.calltime>=to_date('" +DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd") + " 08:30"+"','YYYY/MM/DD HH24:MI')     ";
+            sql += " and  t1.calltime>=to_date('" +DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd") + " 08:00"+"','YYYY/MM/DD HH24:MI')     ";
 
       
 
-       sql += " and  t1.calltime<to_date('" + DateTime.Now.AddDays(+0).ToString("yyyy/MM/dd") + " 08:30" + "','YYYY/MM/DD HH24:MI')     ";
+       sql += " and  t1.calltime<to_date('" + DateTime.Now.AddDays(+0).ToString("yyyy/MM/dd") + " 08:00" + "','YYYY/MM/DD HH24:MI')     ";
 
        sql += " and (t1.fab like 'T0%'   or  t1.fab like 'T1%'  or  t1.fab like 'T0T1_OTHERS%' or t1.fab like 'OTHERS%' or t1.fab like 'ARRAY%' or t1.fab like 'CELL%' or t1.fab like 'CF%'  )                                                  ";
 
@@ -141,11 +141,11 @@ public partial class onduty_epaper_daily_e_paper : System.Web.UI.Page
 
 
 
-        sql_temp2 += " and  t1.calltime>=to_date('" + DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd") + " 08:30" + "','YYYY/MM/DD HH24:MI')     ";
+        sql_temp2 += " and  t1.calltime>=to_date('" + DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd") + " 08:00" + "','YYYY/MM/DD HH24:MI')     ";
 
 
 
-        sql_temp2 += " and  t1.calltime<to_date('" + DateTime.Now.AddDays(+0).ToString("yyyy/MM/dd") + " 08:30" + "','YYYY/MM/DD HH24:MI')     ";
+        sql_temp2 += " and  t1.calltime<to_date('" + DateTime.Now.AddDays(+0).ToString("yyyy/MM/dd") + " 08:00" + "','YYYY/MM/DD HH24:MI')     ";
 
         sql_temp2 += " and (t1.fab like 'T2%'   or  t1.fab like 'T2_OTHERS%'   )                                                  ";
 
@@ -208,11 +208,11 @@ public partial class onduty_epaper_daily_e_paper : System.Web.UI.Page
 
 
 
-        sql_temp3 += " and  t1.calltime>=to_date('" + DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd") + " 08:30" + "','YYYY/MM/DD HH24:MI')     ";
+        sql_temp3 += " and  t1.calltime>=to_date('" + DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd") + " 08:00" + "','YYYY/MM/DD HH24:MI')     ";
 
 
 
-       // sql_temp3 += " and  t1.calltime<to_date('" + DateTime.Now.AddDays(+0).ToString("yyyy/MM/dd") + " 08:30" + "','YYYY/MM/DD HH24:MI')     ";
+       // sql_temp3 += " and  t1.calltime<to_date('" + DateTime.Now.AddDays(+0).ToString("yyyy/MM/dd") + " 08:00" + "','YYYY/MM/DD HH24:MI')     ";
 
         sql_temp3 += " and (t1.fab like 'T1T2%'      )                                                  ";
 
