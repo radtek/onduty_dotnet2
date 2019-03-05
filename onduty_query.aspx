@@ -375,6 +375,9 @@
                                                                     處理時間:</br>
                                                                     <asp:Label ID="lbldue_time" runat="server" ForeColor="DarkGreen" Text='<%# Bind("due_time") %>'></asp:Label>&nbsp
                                                                     分</br>
+                                                                    處理者:</br>
+                                                                    <asp:Label ID="lblbywhom" runat="server" ForeColor="DarkGreen" Text='<%# Bind("bywhom") %>'></asp:Label>&nbsp
+                                                                    </br>
                                                                    <%-- AssignTo:</br>
                                                                     <asp:Label ID="lblbassign_owner" runat="server" ForeColor="DarkGreen" Text='<%# Bind("assign_owner") %>'></asp:Label>&nbsp
                                                                     </br>--%>

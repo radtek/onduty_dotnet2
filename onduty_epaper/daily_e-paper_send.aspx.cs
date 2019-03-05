@@ -95,22 +95,33 @@ public partial class onduty_epaper_daily_e_paper_send : System.Web.UI.Page
 
         string sql_count = "";
 
-        sql_count = sql;
+//        sql_count = sql;
 
-        sql_count = " select count(aa.seq)as total_count,sum(case when aa.ars_flag='ON' then 1 else 0 end) as ars_count,  " +
-"        sum(case when aa.close_flag='OPEN' then 1 else 0 end) as open_count,                         " +
-"        sum(case when aa.alarm_flag='ON' then 1 else 0 end) as alarm_count,                           " +
-"        sum(case when aa.assign_owner in ('請選擇')  then 0 else 1 end) as assignto_count                           " +
-"  from (      " + sql_count + "  ) aa                                                                                      ";
-
-
+//        sql_count = " select count(aa.seq)as total_count,sum(case when aa.ars_flag='ON' then 1 else 0 end) as ars_count,  " +
+//"        sum(case when aa.close_flag='OPEN' then 1 else 0 end) as open_count,                         " +
+//"        sum(case when aa.alarm_flag='ON' then 1 else 0 end) as alarm_count,                           " +
+//"        sum(case when aa.assign_owner in ('請選擇')  then 0 else 1 end) as assignto_count                           " +
+//"  from (      " + sql_count + "  ) aa                                                                                      ";
 
 
+        string sql_combine = @"     select count(aa.seq)as total_count, case when sum(case when aa.ars_flag='ON' then 1 else 0 end) is null then 0 else sum(case when aa.ars_flag='ON' then 1 else 0 end)end  as ars_count, 
+       case when sum(case when aa.close_flag='OPEN' then 1 else 0 end) is null then 0 else sum(case when aa.close_flag='OPEN' then 1 else 0 end) end as open_count,                       
+       case when sum(case when aa.alarm_flag='ON' then 1 else 0 end) is null then 0 else  sum(case when aa.alarm_flag='ON' then 1 else 0 end) end as alarm_count,                          
+       case when  sum(case when aa.assign_owner in ('請選擇')  then 0 else 1 end) is null then 0 else sum(case when aa.assign_owner in ('請選擇')  then 0 else 1 end)end as assignto_count                          
+  from (    
+ 
+              {0}
+              
+              
+              ) aa ";
+
+
+        sql_combine = string.Format(sql_combine, sql);
 
 
 
         DataSet ds_fl = new DataSet();
-        ds_fl = func.get_dataSet_access(sql_count, conn);
+        ds_fl = func.get_dataSet_access(sql_combine, conn);
 
 
 

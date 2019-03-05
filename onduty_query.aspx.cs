@@ -104,7 +104,7 @@ public partial class onduty_query : System.Web.UI.Page
 "   from onduty t                                                                                   ";
 
             // ds_temp.Clear();
-            string [] fab_array={"T0T1*","T2*","T0Array","T1Array","T0Cell","T1Cell","T1CF","T2Array","T2Cell","T2CF","T0T1_OTHERS","T2_OTHERS"};
+            string [] fab_array={"T0T1*","T2*","T0Array","T1Array","T0Cell","T1Cell","T1CF","T2Array","T2Cell","T2CF","T0T1_OTHERS","T2_OTHERS","C3","WIS"};
             ds_temp = func.get_dataSet_access(sql_str, conn);
             
             DropDownList1.DataSource = ds_temp.Tables[0];
@@ -262,7 +262,9 @@ public partial class onduty_query : System.Web.UI.Page
             Label5.ForeColor = Color.Red;
 
             bind_data();
+            //MappTextProvider omapp = new MappTextProvider();
 
+            //omapp.SendMessage("12574", "值班紀錄被查詢發送測試");
 
         }
     }

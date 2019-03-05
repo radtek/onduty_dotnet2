@@ -609,3 +609,134 @@ public class func
 
 
 }
+
+public class FileIndexProvider
+{
+    // C2M\TFTR2\YH83D\YH83DN01\YH83DN013A61.txt
+    //===== 0       1      2       3
+
+    public FileIndexProvider()
+    {
+    }
+    public DirectoryInfo[] GetDirectory(string file_path)
+    {
+        DirectoryInfo dir = new DirectoryInfo(file_path);
+        // FileInfo[] files = dir.GetFiles("*.xls"); 
+        //FileInfo[] files = dir.GetFiles(file_type);
+
+        DirectoryInfo[] subdir = dir.GetDirectories();
+
+        return subdir;
+
+    }
+
+    public FileInfo[] GetFileInfo(string file_path)
+    {
+        DirectoryInfo dir = new DirectoryInfo(file_path);
+        FileInfo[] files = dir.GetFiles("*.*");
+        //FileInfo[] files = dir.GetFiles(file_type);
+
+
+        return files;
+
+    }
+
+    public void WriteLOG(string file_path, string content, string file_type)
+    {
+
+        StreamWriter sw;
+        DirectoryInfo di;//宣告目錄 
+        FileInfo fi;//宣告檔案 
+        string localcontent = content;
+        //di = new DirectoryInfo(Server.MapPath(".") + "\\RUN_LOG\\" ); //DateTime.Now.ToString("yyyyMMdd") 
+        di = new DirectoryInfo(file_path); //DateTime.Now.ToString("yyyyMMdd") 
+        //fi = new FileInfo(Server.MapPath(".") + "\\RUN_LOG\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + DateTime.Now.ToString("yyyyMMdd") + ".log"); 
+        fi = new FileInfo(file_path + DateTime.Now.ToString("yyyyMMdd") + "." + file_type);
+
+        if (!di.Exists)
+        {
+            di.Create();//目錄不存在 產生目錄 
+        }
+        if (fi.Exists == true)
+        {
+            //檔案存在 寫檔案 
+            //sw = File.AppendText(Server.MapPath(".") + "\\RUN_LOG\\" + DateTime.Now.ToString("yyyyMMdd") + ".log"); 
+            sw = File.AppendText(file_path + DateTime.Now.ToString("yyyyMMdd") + "." + file_type);
+        }
+        else
+        {
+            sw = fi.CreateText(); //檔案不存在 產生檔案 
+        }
+
+        sw.WriteLine(localcontent);
+        sw.Close();
+
+    }
+
+}
+
+
+public class MappProvider : Page
+{
+    private string mappoupid = "";
+    private string mappContent = "";
+
+    public MappProvider()
+    {
+
+    }
+    public void SendMessage(string sgroup, string scontent)
+    {
+        mappoupid = sgroup;
+        mappContent = scontent;
+
+        string webmessage = @"http://mapp.innolux.com/teamplus_innolux/API/IMService.ashx?ask=sendChatMessage&account=api_jncim1_mi&api_key=B195F0D2-7AFF-0F08-41A0-48386C54DE70&chat_sn={0}&content_type=1&msg_content={1}";
+        webmessage = string.Format(webmessage, mappoupid, mappContent);
+
+        string ask = "sendChatMessage";
+
+        string account = "api_jncim1_mi";
+
+        string api_key = "B195F0D2-7AFF-0F08-41A0-48386C54DE70";
+        string content_type = "1";
+        string chat_sn = mappoupid;
+        string msg_content = mappContent;
+
+        Encoding myEncoding = Encoding.GetEncoding("UTF-8");
+
+        string address = "http://mapp.innolux.com/teamplus_innolux/API/IMService.ashx?" + HttpUtility.UrlEncode("ask", myEncoding) + "=" + HttpUtility.UrlEncode(ask, myEncoding) + "&" + HttpUtility.UrlEncode("account", myEncoding) + "=" + HttpUtility.UrlEncode(account, myEncoding) + "&" + HttpUtility.UrlEncode("api_key", myEncoding) + "=" + HttpUtility.UrlEncode(api_key, myEncoding) + "&" + HttpUtility.UrlEncode("chat_sn", myEncoding) + "=" + HttpUtility.UrlEncode(chat_sn, myEncoding) + "&" + HttpUtility.UrlEncode("content_type", myEncoding) + "=" + HttpUtility.UrlEncode(content_type, myEncoding) + "&" + HttpUtility.UrlEncode("msg_content", myEncoding) + "=" + HttpUtility.UrlEncode(msg_content, myEncoding);
+
+        //Console.WriteLine("address:" + address);
+
+        HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(address);
+
+        req.Method = "GET";
+
+        using (WebResponse wr = req.GetResponse())
+        {
+
+            using (StreamReader myStreamReader = new StreamReader(wr.GetResponseStream(), myEncoding))
+            {
+
+                string data = myStreamReader.ReadToEnd();
+
+                //Console.WriteLine("data:" + data);
+
+            }
+
+        }
+
+
+        //string script_temp2 = @" <script language='javascript' type='text/JavaScript'>" +
+        //         " window.open(' " + webmessage + " ', 'mapp', config='height=20,width=30');" +
+        //         "window.opener=null;window.close();" +
+        //         " </script> ";
+
+
+        ////呼叫 javascript 
+        //this.Page.RegisterStartupScript("", script_temp2);
+
+    }
+
+
+}

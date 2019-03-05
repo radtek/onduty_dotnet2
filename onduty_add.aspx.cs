@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Net;
 using System.Text;
 using System.Net.Mail;
+using Innolux.Portal.Common;
 
 public partial class onduty_add : System.Web.UI.Page
 {
@@ -765,70 +766,103 @@ public partial class onduty_add : System.Web.UI.Page
             call_mail(max_sn.ToString(), DropDownList_ASSIGN_OWNER.SelectedValue);
         }
 
-       
-       #region Add UploadFile
+
+        #region Add UploadFile
 
 
-           for (int i = 1; i <= Request.Files.Count; i++)
+        NetworkDrive oNetDrive1 = new NetworkDrive();
+        oNetDrive1.LocalDrive = "M:";
+        oNetDrive1.Persistent = true;
+        oNetDrive1.SaveCredentials = true;
+        oNetDrive1.ShareName = @"\\172.16.12.62\ams";
+
+        try
         {
-            FileUpload myFL = new FileUpload();
-            ContentPlaceHolder c = (ContentPlaceHolder)Master.FindControl("ContentPlaceHolder1");
-            myFL = (FileUpload)c.FindControl("FileUpload" + i); 
-            //myFL = (FileUpload)Page.FindControl("FileUpload" + i);
-            if (myFL.PostedFile.ContentLength < 15360000)
-          
-            {
+            oNetDrive1.MapDrive(@"T1FAB\t1eda", "CIMabc123");
 
-                if ((myFL.PostedFile != null) && (myFL.PostedFile.ContentLength > 0))
+
+
+
+            for (int i = 1; i <= Request.Files.Count; i++)
+            {
+                FileUpload myFL = new FileUpload();
+                ContentPlaceHolder c = (ContentPlaceHolder)Master.FindControl("ContentPlaceHolder1");
+                myFL = (FileUpload)c.FindControl("FileUpload" + i);
+                //myFL = (FileUpload)Page.FindControl("FileUpload" + i);
+                if (myFL.PostedFile.ContentLength < 15360000)
                 {
 
-                    string fn = System.IO.Path.GetFileName(myFL.PostedFile.FileName);
-                    // string saveLocation = Server.MapPath("../") + "\\upload_file\\" + fn;
-                    string saveLocation = Server.MapPath("FileList/") + fn;
-
-                    Session["file_path"] = "FileList/" + fn;
-                    int file_size = myFL.PostedFile.ContentLength;
-                    string file_type = myFL.PostedFile.ContentType;
-                    try
+                    if ((myFL.PostedFile != null) && (myFL.PostedFile.ContentLength > 0))
                     {
-                        myFL.PostedFile.SaveAs(saveLocation);
 
-                        //OleDbConnection myConnection = new OleDbConnection(ConfigurationSettings.AppSettings["dsnn"]);
+                        string fn = System.IO.Path.GetFileName(myFL.PostedFile.FileName);
+                        // string saveLocation = Server.MapPath("../") + "\\upload_file\\" + fn;
+                        //string saveLocation = Server.MapPath("FileList/") + fn;
+                        string saveLocation = oNetDrive1.LocalDrive + @"\" + fn;
 
-                        //string strClientIP;
 
-                        string strClientIP = Request.ServerVariables["remote_host"].ToString();
+                        //Session["file_path"] = "FileList/" + fn;
+                        int file_size = myFL.PostedFile.ContentLength;
+                        string file_type = myFL.PostedFile.ContentType;
+                        try
+                        {
+                            myFL.PostedFile.SaveAs(saveLocation);
 
-                        string sql_insert = @"insert into onduty_file
+                            //OleDbConnection myConnection = new OleDbConnection(ConfigurationSettings.AppSettings["dsnn"]);
+
+                            //string strClientIP;
+
+                            string strClientIP = Request.ServerVariables["remote_host"].ToString();
+
+                            string sql_insert = @"insert into onduty_file
                                              (seq, file_name, dttm)
                                              values
                                             ('{0}', '{1}', sysdate)";
-                        
-                        FileHandle cfilehandle=new FileHandle();
-                        cfilehandle.GetMaxSeq();
 
-                        sql_insert = string.Format(sql_insert, cfilehandle.Seq, fn);
-                     
-                        func.get_sql_execute(sql_insert, conn);
+                            FileHandle cfilehandle = new FileHandle();
+                            cfilehandle.GetMaxSeq();
+                            //cfilehandle.Seq = Session["seq"].ToString();
+                            sql_insert = string.Format(sql_insert, cfilehandle.Seq, fn);
+
+                            func.get_sql_execute(sql_insert, conn);
 
 
 
+                        }
+                        catch (Exception ex)
+                        {
+                            Response.Write("上傳檔案失敗");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Response.Write("上傳檔案失敗");
-                    }
+
                 }
-             
-            }
 
-            else
-            {
-                //Label3.Visible = true;
-                //Label3.Text = "上傳檔案超過15MB...";
+                else
+                {
+                    //Label3.Visible = true;
+                    //Label3.Text = "上傳檔案超過15MB...";
 
+                }
             }
-         }
+            // Parser_tmp_directory_file(oNetDrive.LocalDrive + "\\T1\\" + DropDownList1.SelectedValue.ToString() + "\\EDANG\\", "*.TXT", -360);
+            // Delete_tmp_directory_file(HttpContext.Current.Server.MapPath(".") + "\\File\\", "*", -3);
+
+
+            oNetDrive1.UnMapDrive(oNetDrive1.LocalDrive, true);
+        }
+        catch (Exception)
+        {
+
+            oNetDrive1.UnMapDrive(oNetDrive1.LocalDrive, true);
+        }
+        finally
+        {
+            //oNetDrive.UnMapDrive();
+        }
+
+
+        //oNetDrive.MapDrive(@"T1FAB\t1eda", "CIMabc123");
+
         #endregion
         Response.Write("<script language='javascript' type='text/JavaScript'>\n");
         Response.Write("alert('新增成功!!');\n");
